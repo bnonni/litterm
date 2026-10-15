@@ -1,41 +1,51 @@
-import { GrpcObject, ServiceClientConstructor } from '@grpc/grpc-js';
-import { ProtobufTypeDefinition } from '@grpc/proto-loader';
+/** gRPC methods of one daemon service */
+export type GrpcService = {[method: string]: (...args: any[]) => any};
 
-export interface ApiForProtoParams {
-    credentials: any;
-    params: any;
-    path: string;
-    service: string;
-    socket: string;
-    type: string;
+/** Authenticated gRPC API Object of a daemon, for example lnd or tapd */
+export type GrpcApi = {[service: string]: GrpcService};
+
+/** Authenticated litd gRPC API Object */
+export type AuthenticatedLitd = {
+  /** Accounts Methods */
+  accounts: GrpcService;
+  /** Autopilot Methods */
+  autopilot: GrpcService;
+  /** Proxy Methods */
+  default: GrpcService;
+  /** Firewall Methods */
+  firewall: GrpcService;
+  /** Authenticated lnd API Object */
+  lnd?: GrpcApi;
+  /** Sessions Methods */
+  sessions: GrpcService;
+  /** Status Methods */
+  status: GrpcService;
+  /** Authenticated tapd API Object */
+  tapd?: GrpcApi;
 };
 
-export type GrpcObjectExt = GrpcObject & { [index: string]: any };
+/** Unauthenticated litd gRPC API Object */
+export type UnauthenticatedLitd = {
+  /** Status Methods */
+  status: GrpcService;
+};
 
-export type ApiObject =
-    | GrpcObject
-    | ServiceClientConstructor
-    | ProtobufTypeDefinition;
+export type LitdServiceType = Exclude<keyof AuthenticatedLitd, 'lnd' | 'tapd'>;
 
-export interface Litd {
-    default: any;
-    firewall: any;
-    lit_accounts: any;
-    lit_autopilot: any;
-    lit_sessions: any;
-    lit_status: any;
-    proxy: any;
-}
+export type LitdConnection = {
+  /** Base64 or Hex Serialized litd TLS Cert String */
+  cert?: string;
+  /** Path to Protos Directory With litrpc and proto Directories String */
+  path?: string;
+  /** Host:Port Network Address String */
+  socket?: string;
+};
 
-export type IsTapdResponse = {
-    litd: Litd;
-    method: string;
-    type:
-    | 'firewall'
-    | 'default'
-    | 'lit_accounts'
-    | 'lit_autopilot'
-    | 'lit_sessions'
-    | 'lit_status'
-    | 'proxy';
-}
+export type LitdAuthentication = LitdConnection & {
+  /** Authenticated lnd API Object */
+  lnd?: GrpcApi;
+  /** Base64 or Hex Serialized Macaroon String */
+  macaroon?: string;
+  /** Authenticated tapd API Object */
+  tapd?: GrpcApi;
+};
