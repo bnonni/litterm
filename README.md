@@ -1,4 +1,4 @@
-# Terminal
+# litterm
 
 Methods for working with the Lightning Terminal Daemon (litd). An extension of [@alexbosworth/lightning](https://github.com/alexbosworth/lightning.git).
 
@@ -16,10 +16,10 @@ the LITD directory. (~/.lit or ~/Library/Application Support/Litd)
 You can then use these to interact with your LITD directly.
 
 ```ts
-import { authenticatedLitdGrpc } from 'terminal';
-// cjs: const { authenticatedLitdGrpc } = require('terminal');
+import { authenticatedLitdGrpc } from 'litterm';
+// cjs: const { authenticatedLitdGrpc } = require('litterm');
 
-const { tapd } = authenticatedLitdGrpc({
+const { litd } = authenticatedLitdGrpc({
     cert: 'base64 encoded tls.cert from ~/.lit dir',
     macaroon: 'base64 encoded lit.macaroon from ~/.lit dir',
     socket: '127.0.0.1:8443',
