@@ -29,6 +29,11 @@ const tests = [
     error: [400, 'ExpectedAccountIdOrLabelToGetAccount'],
   },
   {
+    args: {id: '0102030405060708', label: 'alice', litd},
+    description: 'An account id and a label are not expected together',
+    error: [400, 'ExpectedAccountIdOrLabelNotBothToGetAccount'],
+  },
+  {
     args: {id: 'account', litd},
     description: 'A hex account id is expected',
     error: [400, 'ExpectedHexAccountIdToGetAccount'],
@@ -52,6 +57,19 @@ const tests = [
       litd: litdWith((_, cbk) => cbk({code: 2, details: 'account not found'})),
     },
     description: 'A missing account is returned as not found',
+    error: [404, 'AccountNotFound'],
+  },
+  {
+    args: {
+      label: 'carol',
+      litd: litdWith((_, cbk) => {
+        return cbk({
+          code: 2,
+          details: "unable to find account with label 'carol'",
+        });
+      }),
+    },
+    description: 'A missing account label is returned as not found',
     error: [404, 'AccountNotFound'],
   },
   {
