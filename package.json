@@ -1,5 +1,5 @@
 {
-  "name": "@bnonni/terminal",
+  "name": "litterm",
   "version": "0.1.0",
   "type": "module",
   "description": "Lightning terminal client methods similar @alexbosworth/lightning",
@@ -28,13 +28,13 @@
       "url": "https://github.com/bnonni"
     }
   ],
-  "homepage": "https://github.com/bnonni/terminal",
+  "homepage": "https://github.com/bnonni/litterm",
   "bugs": {
-    "url": "https://github.com/bnonni/terminal/issues"
+    "url": "https://github.com/bnonni/litterm/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/bnonni/terminal.git"
+    "url": "git+ssh://git@github.com/bnonni/litterm.git"
   },
   "license": "MIT",
   "files": [
