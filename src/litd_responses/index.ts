@@ -1,7 +1,18 @@
 export {default as accountRpcError} from './account_rpc_error.js';
+export {default as privacyFlagTypes} from './privacy_flag_types.js';
+export {default as privacyFlagsFromBitmask} from './privacy_flags_from_bitmask.js';
 export {default as rpcAccountAsAccount} from './rpc_account_as_account.js';
 export type {Account} from './rpc_account_as_account.js';
 export type {RpcAccount} from './rpc_account_as_account.js';
 export {default as rpcActionAsAction} from './rpc_action_as_action.js';
 export type {Action} from './rpc_action_as_action.js';
 export type {RpcAction} from './rpc_action_as_action.js';
+export {default as rpcRuleValueAsRuleValue} from './rpc_rule_value_as_rule_value.js';
+export type {RuleValue} from './rpc_rule_value_as_rule_value.js';
+export {default as rpcRulesMapAsRules} from './rpc_rules_map_as_rules.js';
+export type {Rule} from './rpc_rules_map_as_rules.js';
+export type {RpcRulesMap} from './rpc_rules_map_as_rules.js';
+export {default as rpcSessionAsSession} from './rpc_session_as_session.js';
+export type {RpcSession} from './rpc_session_as_session.js';
+export type {Session} from './rpc_session_as_session.js';
+export {default as sessionRpcError} from './session_rpc_error.js';
