@@ -44,6 +44,15 @@ const tests = [
     args: {
       group_id: '01020304',
       input: 'pseudo',
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToGetPrivacyMapValue'],
+  },
+  {
+    args: {
+      group_id: '01020304',
+      input: 'pseudo',
       litd: litdWith((_, cbk) => cbk({details: 'unknown group'})),
     },
     description: 'An unknown group is returned as not found',

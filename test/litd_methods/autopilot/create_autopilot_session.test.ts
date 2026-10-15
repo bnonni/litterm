@@ -109,6 +109,15 @@ const tests = [
     args: {
       expires_at: expiresAt,
       features,
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToCreateAutopilotSession'],
+  },
+  {
+    args: {
+      expires_at: expiresAt,
+      features,
       litd: litdWith((_, cbk) => cbk({code: 12, details: 'unknown service'})),
     },
     description: 'A litd without autopilot is returned as not enabled',

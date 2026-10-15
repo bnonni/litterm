@@ -4,6 +4,7 @@ import {returnResult} from 'asyncjs-util';
 
 import {isConnectionFailure} from '../../litd_requests/index.js';
 import {isLitd} from '../../litd_requests/index.js';
+import {isPermissionDenied} from '../../litd_requests/index.js';
 import {privacyFlagsAsBitmask} from '../../litd_requests/index.js';
 import {rulesAsRpcRulesMap} from '../../litd_requests/index.js';
 import type {RuleArgs} from '../../litd_requests/index.js';
@@ -240,6 +241,10 @@ const createAutopilotSession: LitdMethod<
                   503,
                   'FailedToConnectToLitdToCreateAutopilotSession',
                 ]);
+              }
+
+              if (isPermissionDenied({err})) {
+                return cbk([403, 'PermissionDeniedToCreateAutopilotSession']);
               }
 
               if (err?.code === unimplementedCode) {

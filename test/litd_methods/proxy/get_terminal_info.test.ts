@@ -22,6 +22,13 @@ const tests = [
   },
   {
     args: {
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToGetTerminalInfo'],
+  },
+  {
+    args: {
       litd: litdWith((_, cbk) => {
         return cbk({details: 'waiting for the RPC server to start'});
       }),

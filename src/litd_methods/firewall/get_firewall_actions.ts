@@ -3,6 +3,7 @@ import {returnResult} from 'asyncjs-util';
 
 import {isConnectionFailure} from '../../litd_requests/index.js';
 import {isLitd} from '../../litd_requests/index.js';
+import {isPermissionDenied} from '../../litd_requests/index.js';
 import {rpcActionAsAction} from '../../litd_responses/index.js';
 import type {Action} from '../../litd_responses/index.js';
 import type {AuthenticatedLitdArgs} from '../../typescript/index.js';
@@ -211,6 +212,10 @@ const getFirewallActions: LitdMethod<
             return args.litd[type][method](request, (err: any, res: any) => {
               if (isConnectionFailure({err})) {
                 return cbk([503, 'FailedToConnectToLitdToGetActions']);
+              }
+
+              if (isPermissionDenied({err})) {
+                return cbk([403, 'PermissionDeniedToGetActions']);
               }
 
               if (!!err) {

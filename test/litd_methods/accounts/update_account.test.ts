@@ -79,6 +79,15 @@ const tests = [
   },
   {
     args: {
+      label: 'alice',
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+      new_label: 'bob',
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToUpdateAccount'],
+  },
+  {
+    args: {
       label: 'carol',
       litd: litdWith((_, cbk) => {
         return cbk({details: "unable to find account with label 'carol'"});

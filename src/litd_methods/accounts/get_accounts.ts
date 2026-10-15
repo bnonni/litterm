@@ -3,6 +3,7 @@ import {returnResult} from 'asyncjs-util';
 
 import {isConnectionFailure} from '../../litd_requests/index.js';
 import {isLitd} from '../../litd_requests/index.js';
+import {isPermissionDenied} from '../../litd_requests/index.js';
 import {accountRpcError} from '../../litd_responses/index.js';
 import {rpcAccountAsAccount} from '../../litd_responses/index.js';
 import type {Account} from '../../litd_responses/index.js';
@@ -79,6 +80,10 @@ const getAccounts: LitdMethod<GetAccountsArgs, GetAccountsResult> = (
             return args.litd[type][method]({}, (err: any, res: any) => {
               if (isConnectionFailure({err})) {
                 return cbk([503, 'FailedToConnectToLitdToGetAccounts']);
+              }
+
+              if (isPermissionDenied({err})) {
+                return cbk([403, 'PermissionDeniedToGetAccounts']);
               }
 
               const knownError = accountRpcError({err});

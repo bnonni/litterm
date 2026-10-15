@@ -60,6 +60,15 @@ const tests = [
   {
     args: {
       label: 'alice',
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+      tokens: 100,
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToCreditAccount'],
+  },
+  {
+    args: {
+      label: 'alice',
       litd: litdWith((_, cbk) => cbk({details: 'account not found'})),
       tokens: 100,
     },

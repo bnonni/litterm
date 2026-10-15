@@ -4,6 +4,7 @@ import {returnResult} from 'asyncjs-util';
 
 import {isConnectionFailure} from '../../litd_requests/index.js';
 import {isLitd} from '../../litd_requests/index.js';
+import {isPermissionDenied} from '../../litd_requests/index.js';
 import {sessionRpcError} from '../../litd_responses/index.js';
 import type {AuthenticatedLitdArgs} from '../../typescript/index.js';
 import type {LitdCallback} from '../../typescript/index.js';
@@ -78,6 +79,10 @@ const revokeAutopilotSession: LitdMethod<RevokeAutopilotSessionArgs, void> = (
                   503,
                   'FailedToConnectToLitdToRevokeAutopilotSession',
                 ]);
+              }
+
+              if (isPermissionDenied({err})) {
+                return cbk([403, 'PermissionDeniedToRevokeAutopilotSession']);
               }
 
               if (err?.code === unimplementedCode) {

@@ -53,6 +53,14 @@ const tests = [
   },
   {
     args: {
+      label: 'alice',
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToGetAccount'],
+  },
+  {
+    args: {
       label: 'bob',
       litd: litdWith((_, cbk) => cbk({code: 2, details: 'account not found'})),
     },

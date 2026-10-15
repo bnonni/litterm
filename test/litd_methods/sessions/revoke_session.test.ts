@@ -34,6 +34,14 @@ const tests = [
   },
   {
     args: {
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+      public_key: publicKey,
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToRevokeSession'],
+  },
+  {
+    args: {
       litd: litdWith((_, cbk) => {
         return cbk({details: 'error fetching session: session not found'});
       }),

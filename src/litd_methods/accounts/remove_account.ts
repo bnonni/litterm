@@ -3,6 +3,7 @@ import {returnResult} from 'asyncjs-util';
 
 import {isConnectionFailure} from '../../litd_requests/index.js';
 import {isLitd} from '../../litd_requests/index.js';
+import {isPermissionDenied} from '../../litd_requests/index.js';
 import {accountRpcError} from '../../litd_responses/index.js';
 import type {AuthenticatedLitdArgs} from '../../typescript/index.js';
 import type {LitdCallback} from '../../typescript/index.js';
@@ -76,6 +77,10 @@ const removeAccount: LitdMethod<RemoveAccountArgs, void> = (
             return args.litd[type][method](request, (err: any) => {
               if (isConnectionFailure({err})) {
                 return cbk([503, 'FailedToConnectToLitdToRemoveAccount']);
+              }
+
+              if (isPermissionDenied({err})) {
+                return cbk([403, 'PermissionDeniedToRemoveAccount']);
               }
 
               const knownError = accountRpcError({err});

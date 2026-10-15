@@ -86,6 +86,14 @@ const tests = [
   {
     args: {
       expires_at: expiresAt,
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToCreateSession'],
+  },
+  {
+    args: {
+      expires_at: expiresAt,
       litd: litdWith((_, cbk) => cbk({details: 'URI /x is unknown to LiT'})),
       permissions: [{action: '/x', entity: 'uri'}],
       type: 'custom' as const,

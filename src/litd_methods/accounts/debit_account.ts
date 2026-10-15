@@ -3,6 +3,7 @@ import {returnResult} from 'asyncjs-util';
 
 import {isConnectionFailure} from '../../litd_requests/index.js';
 import {isLitd} from '../../litd_requests/index.js';
+import {isPermissionDenied} from '../../litd_requests/index.js';
 import {accountRpcError} from '../../litd_responses/index.js';
 import {rpcAccountAsAccount} from '../../litd_responses/index.js';
 import type {Account} from '../../litd_responses/index.js';
@@ -110,6 +111,10 @@ const debitAccount: LitdMethod<DebitAccountArgs, DebitAccountResult> = (
             return args.litd[type][method](request, (err: any, res: any) => {
               if (isConnectionFailure({err})) {
                 return cbk([503, 'FailedToConnectToLitdToDebitAccount']);
+              }
+
+              if (isPermissionDenied({err})) {
+                return cbk([403, 'PermissionDeniedToDebitAccount']);
               }
 
               const knownError = accountRpcError({err});

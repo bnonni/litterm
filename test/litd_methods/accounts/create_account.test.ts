@@ -55,6 +55,14 @@ const tests = [
   },
   {
     args: {
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+      tokens: 1000,
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToCreateAccount'],
+  },
+  {
+    args: {
       litd: litdWith((_, cbk) => {
         return cbk({details: 'account label uniqueness constraint violation'});
       }),

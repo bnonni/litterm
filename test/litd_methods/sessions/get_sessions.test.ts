@@ -23,6 +23,13 @@ const tests = [
     error: [503, 'FailedToConnectToLitdToGetSessions'],
   },
   {
+    args: {
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToGetSessions'],
+  },
+  {
     args: {litd: litdWith((_, cbk) => cbk('err'))},
     description: 'An unexpected error is returned',
     error: [503, 'UnexpectedErrorGettingSessions', {err: 'err'}],

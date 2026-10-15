@@ -3,6 +3,7 @@ import {returnResult} from 'asyncjs-util';
 
 import {isConnectionFailure} from '../../litd_requests/index.js';
 import {isLitd} from '../../litd_requests/index.js';
+import {isPermissionDenied} from '../../litd_requests/index.js';
 import type {AuthenticatedLitdArgs} from '../../typescript/index.js';
 import type {LitdCallback} from '../../typescript/index.js';
 import type {LitdError} from '../../typescript/index.js';
@@ -63,6 +64,10 @@ const getTerminalInfo: LitdMethod<
             return args.litd[type][method]({}, (err: any, res: any) => {
               if (isConnectionFailure({err})) {
                 return cbk([503, 'FailedToConnectToLitdToGetTerminalInfo']);
+              }
+
+              if (isPermissionDenied({err})) {
+                return cbk([403, 'PermissionDeniedToGetTerminalInfo']);
               }
 
               if (!!err && String(err.details).includes(notReadyError)) {

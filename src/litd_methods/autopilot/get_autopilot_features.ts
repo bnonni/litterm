@@ -4,6 +4,7 @@ import {returnResult} from 'asyncjs-util';
 
 import {isConnectionFailure} from '../../litd_requests/index.js';
 import {isLitd} from '../../litd_requests/index.js';
+import {isPermissionDenied} from '../../litd_requests/index.js';
 import {rpcFeatureAsFeature} from '../../litd_responses/index.js';
 import type {Feature} from '../../litd_responses/index.js';
 import type {AuthenticatedLitdArgs} from '../../typescript/index.js';
@@ -92,6 +93,10 @@ const getAutopilotFeatures: LitdMethod<
                   503,
                   'FailedToConnectToLitdToGetAutopilotFeatures',
                 ]);
+              }
+
+              if (isPermissionDenied({err})) {
+                return cbk([403, 'PermissionDeniedToGetAutopilotFeatures']);
               }
 
               if (err?.code === unimplementedCode) {

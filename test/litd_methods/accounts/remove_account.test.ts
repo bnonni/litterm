@@ -42,6 +42,14 @@ const tests = [
   },
   {
     args: {
+      label: 'alice',
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToRemoveAccount'],
+  },
+  {
+    args: {
       label: 'bob',
       litd: litdWith((_, cbk) =>
         cbk({details: "unable to find account with label 'bob'"}),

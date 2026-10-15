@@ -5,6 +5,7 @@ import type {AuthenticatedLitd} from '../../litd_grpc/index.js';
 import type {UnauthenticatedLitd} from '../../litd_grpc/index.js';
 import {isConnectionFailure} from '../../litd_requests/index.js';
 import {isLitd} from '../../litd_requests/index.js';
+import {isPermissionDenied} from '../../litd_requests/index.js';
 import type {LitdCallback} from '../../typescript/index.js';
 import type {LitdError} from '../../typescript/index.js';
 import type {LitdMethod} from '../../typescript/index.js';
@@ -83,6 +84,10 @@ const getSubServerStatus: LitdMethod<
             return args.litd[type][method]({}, (err: any, res: any) => {
               if (isConnectionFailure({err})) {
                 return cbk([503, 'FailedToConnectToLitdToGetSubServerStatus']);
+              }
+
+              if (isPermissionDenied({err})) {
+                return cbk([403, 'PermissionDeniedToGetSubServerStatus']);
               }
 
               if (!!err) {

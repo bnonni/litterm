@@ -3,6 +3,7 @@ import {returnResult} from 'asyncjs-util';
 
 import {isConnectionFailure} from '../../litd_requests/index.js';
 import {isLitd} from '../../litd_requests/index.js';
+import {isPermissionDenied} from '../../litd_requests/index.js';
 import {rpcSessionAsSession} from '../../litd_responses/index.js';
 import {sessionRpcError} from '../../litd_responses/index.js';
 import type {Session} from '../../litd_responses/index.js';
@@ -89,6 +90,10 @@ const getSessions: LitdMethod<GetSessionsArgs, GetSessionsResult> = (
             return args.litd[type][method]({}, (err: any, res: any) => {
               if (isConnectionFailure({err})) {
                 return cbk([503, 'FailedToConnectToLitdToGetSessions']);
+              }
+
+              if (isPermissionDenied({err})) {
+                return cbk([403, 'PermissionDeniedToGetSessions']);
               }
 
               const knownError = sessionRpcError({err});

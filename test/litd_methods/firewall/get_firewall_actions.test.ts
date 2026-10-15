@@ -108,6 +108,13 @@ const tests = [
     error: [503, 'FailedToConnectToLitdToGetActions'],
   },
   {
+    args: {
+      litd: litdWith((_, cbk) => cbk({code: 2, details: 'permission denied'})),
+    },
+    description: 'A permission failure is returned',
+    error: [403, 'PermissionDeniedToGetActions'],
+  },
+  {
     args: {litd: litdWith((_, cbk) => cbk('err'))},
     description: 'An unexpected error is returned',
     error: [503, 'UnexpectedErrorGettingActions', {err: 'err'}],
