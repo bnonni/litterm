@@ -3,6 +3,7 @@ import {returnResult} from 'asyncjs-util';
 
 import {isConnectionFailure} from '../../litd_requests/index.js';
 import {isLitd} from '../../litd_requests/index.js';
+import {accountRpcError} from '../../litd_responses/index.js';
 import {rpcAccountAsAccount} from '../../litd_responses/index.js';
 import type {Account} from '../../litd_responses/index.js';
 import type {AuthenticatedLitdArgs} from '../../typescript/index.js';
@@ -12,7 +13,6 @@ import type {LitdMethod} from '../../typescript/index.js';
 
 const isHex = (n: string) => !(n.length % 2) && /^[0-9A-F]+$/i.test(n);
 const method = 'accountInfo';
-const notFoundError = 'account not found';
 const type = 'accounts';
 
 export type GetAccountArgs = AuthenticatedLitdArgs<{
@@ -33,7 +33,7 @@ type Tasks = {
 
   Requires `account:read` permission
 
-  An `id` or a `label` is required
+  An `id` or a `label` is required, not both
 
   {
     [id]: <Account Id Hex String>
@@ -74,6 +74,10 @@ const getAccount: LitdMethod<GetAccountArgs, GetAccountResult> = (
             return cbk([400, 'ExpectedAccountIdOrLabelToGetAccount']);
           }
 
+          if (!!args.id && !!args.label) {
+            return cbk([400, 'ExpectedAccountIdOrLabelNotBothToGetAccount']);
+          }
+
           if (!!args.id && !isHex(args.id)) {
             return cbk([400, 'ExpectedHexAccountIdToGetAccount']);
           }
@@ -96,8 +100,10 @@ const getAccount: LitdMethod<GetAccountArgs, GetAccountResult> = (
                 return cbk([503, 'FailedToConnectToLitdToGetAccount']);
               }
 
-              if (!!err && String(err.details).includes(notFoundError)) {
-                return cbk([404, 'AccountNotFound']);
+              const knownError = accountRpcError({err});
+
+              if (!!knownError) {
+                return cbk(knownError);
               }
 
               if (!!err) {
