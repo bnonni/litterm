@@ -31,7 +31,7 @@ export type UpdateAccountArgs = AuthenticatedLitdArgs<{
   is_expiry_removed?: boolean;
   /** Account Label String */
   label?: string;
-  /** New Account Label String */
+  /** New Account Label String, litd v0.17.0 or Later */
   new_label?: string;
 }>;
 
@@ -49,6 +49,8 @@ type Tasks = {
   Requires `account:write` permission
 
   An `id` or a `label` is required, not both
+
+  `new_label` needs litd v0.17.0 or later. Older litd versions ignore it.
 
   {
     [expires_at]: <Account Expires At ISO 8601 Date String>

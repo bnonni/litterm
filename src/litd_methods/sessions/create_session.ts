@@ -66,6 +66,10 @@ type Tasks = {
   URI regular expression, or `***readonly***` as the action, to give access to
   RPC methods.
 
+  litd reads an unknown URI as a regular expression. If the expression matches
+  no URI, the session gets no permission for it, and litd returns no error.
+  Check `macaroon_permissions` in the result.
+
   The default type is `readonly`
 
   {

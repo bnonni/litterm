@@ -224,6 +224,10 @@ A `custom` session needs `permissions`. Use the entity `uri` and a URI, a
 URI regular expression, or `***readonly***` as the action, to give access to
 RPC methods.
 
+litd reads an unknown URI as a regular expression. If the expression matches
+no URI, the session gets no permission for it, and litd returns no error.
+Check `macaroon_permissions` in the result.
+
 The default type is `readonly`
 
     {
@@ -859,6 +863,8 @@ Requires `account:write` permission
 
 An `id` or a `label` is required, not both
 
+`new_label` needs litd v0.17.0 or later. Older litd versions ignore it.
+
     {
       [expires_at]: <Account Expires At ISO 8601 Date String>
       [id]: <Account Id Hex String>
@@ -901,6 +907,7 @@ const account = await updateAccount({litd, label: 'alice', new_label: 'bob'});
 Methods return errors as arrays: `[code, 'ErrorMessage', {err}]`.
 
 - `400`: An argument is not correct.
+- `403`: The macaroon does not have the permission for the method.
 - `404`: litd does not have the item.
 - `409`: The item already exists, for example an account label.
 - `501`: litd does not have the feature, for example autopilot is off.
