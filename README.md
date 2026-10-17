@@ -5,9 +5,13 @@ Methods for the Lightning Terminal daemon (litd), in the style of
 
 ## Install
 
-    npm install litterm
+    npm install litterm lightning
 
 litterm needs Node.js 22.12 or later.
+
+[lightning](https://github.com/alexbosworth/lightning) is a peer dependency.
+litterm maps lnd payments and channels with the lightning mappers, so these
+results have the same shape as in lightning.
 
 ## litd Authentication
 
@@ -29,30 +33,27 @@ const {litd} = authenticatedLitdGrpc({
 });
 ```
 
-Methods that use more than one daemon get lnd and tapd from the litd object.
-To use these methods, give the authenticated lnd and tapd objects to
-`authenticatedLitdGrpc`:
+Methods for Taproot Assets channels (`getAssetChannels` and
+`getAssetChannelBalance`) get lnd from the litd object. To use these methods,
+give an authenticated lnd object to `authenticatedLitdGrpc`. lnd must run in
+litd integrated mode with tapd.
 
 ```js
 import {authenticatedLndGrpc} from 'lightning';
 import {authenticatedLitdGrpc} from 'litterm';
-import {authenticatedTapdGrpc} from 'tapass';
 
 const {lnd} = authenticatedLndGrpc({cert, macaroon, socket: '127.0.0.1:10009'});
-const {tapd} = authenticatedTapdGrpc({
-  cert,
-  macaroon,
-  socket: '127.0.0.1:10029',
-});
 
 const {litd} = authenticatedLitdGrpc({
   lnd,
-  tapd,
   cert: 'base64 encoded tls.cert',
   macaroon: 'base64 encoded lit.macaroon',
   socket: '127.0.0.1:8443',
 });
 ```
+
+To pay with Taproot Assets, use `payAssetInvoice` and `sendAssetKeysend` from
+[tapass](https://www.npmjs.com/package/tapass).
 
 To get the status of the litd subservers without a macaroon, use
 `unauthenticatedLitdGrpc`:
@@ -72,7 +73,10 @@ const {litd} = unauthenticatedLitdGrpc({cert, socket: '127.0.0.1:8443'});
 - [creditAccount](#creditaccount): Increase the balance of an account
 - [debitAccount](#debitaccount): Decrease the balance of an account
 - [getAccount](#getaccount): Get an account
+- [getAccountPayments](#getaccountpayments): Get the payments of an account, in payment hash order
 - [getAccounts](#getaccounts): Get all accounts
+- [getAssetChannelBalance](#getassetchannelbalance): Get the Taproot Assets balances of the open and pending channels
+- [getAssetChannels](#getassetchannels): Get the open channels that hold Taproot Assets
 - [getAutopilotFeatures](#getautopilotfeatures): Get the features that the Autopilot server offers
 - [getAutopilotSessions](#getautopilotsessions): Get all Autopilot sessions
 - [getFirewallActions](#getfirewallactions): Get the actions that the firewall recorded, newest first
@@ -441,6 +445,65 @@ import {getAccount} from 'litterm';
 const {balance} = await getAccount({litd, label: 'alice'});
 ```
 
+### getAccountPayments
+
+Get the payments of an account, in payment hash order
+
+Requires `account:read` permission
+
+An `id` or a `label` is required, not both
+
+The maximum `limit` is 50. The default `limit` is 20.
+
+This method needs litd v0.17.1 or later
+
+If lnd does not know an account payment, its hash is in `missing_payments`
+
+The payment fields are the same as in lightning getPayments
+
+    {
+      [id]: <Account Id Hex String>
+      [label]: <Account Label String>
+      [limit]: <Page Result Limit Number>
+      litd: <Authenticated litd API Object>
+      [token]: <Opaque Paging Token String>
+    }
+
+    @returns via cbk or Promise
+    {
+      missing_payments: [{
+        id: <Payment Hash Hex String>
+      }]
+      [next]: <Next Opaque Paging Token String>
+      payments: [{
+        attempts: [<lightning Payment Attempt Object>]
+        [confirmed_at]: <Payment Confirmed At ISO 8601 Date String>
+        created_at: <Payment at ISO-8601 Date String>
+        [destination]: <Destination Node Public Key Hex String>
+        [fee]: <Paid Routing Fee Rounded Down Tokens Number>
+        [fee_mtokens]: <Paid Routing Fee in Millitokens String>
+        hops: [<First Route Hop Public Key Hex String>]
+        id: <Payment Preimage Hash String>
+        [index]: <Payment Add Index Number>
+        is_confirmed: <Payment is Confirmed Bool>
+        is_outgoing: <Transaction Is Outgoing Bool>
+        mtokens: <Millitokens Sent to Destination String>
+        [request]: <BOLT 11 Payment Request String>
+        [safe_fee]: <Payment Forwarding Fee Rounded Up Tokens Number>
+        safe_tokens: <Payment Tokens Rounded Up Number>
+        [secret]: <Payment Preimage Hex String>
+        tokens: <Rounded Down Tokens Sent to Destination Number>
+      }]
+    }
+
+Example:
+
+```js
+import {getAccountPayments} from 'litterm';
+
+const {payments} = await getAccountPayments({litd, label: 'alice'});
+```
+
 ### getAccounts
 
 Get all accounts
@@ -479,6 +542,135 @@ Example:
 import {getAccounts} from 'litterm';
 
 const {accounts} = await getAccounts({litd});
+```
+
+### getAssetChannelBalance
+
+Get the Taproot Assets balances of the open and pending channels
+
+Requires `offchain:read` permission
+
+This method uses lnd from `litd.lnd`. lnd must run in litd integrated mode
+with tapd, so that lnd returns the asset balances as JSON.
+
+A balance of a group key is the sum of all assets of the group
+
+    {
+      litd: <Authenticated litd API Object With lnd Object>
+    }
+
+    @returns via cbk or Promise
+    {
+      assets: [{
+        asset_id: <Asset Id Hex String>
+        local_balance: <Local Balance Asset Units Numeric String>
+        [name]: <Asset Name String>
+        remote_balance: <Remote Balance Asset Units Numeric String>
+      }]
+      groups: [{
+        group_key: <Asset Group Key Hex String>
+        local_balance: <Local Balance Asset Units Numeric String>
+        remote_balance: <Remote Balance Asset Units Numeric String>
+      }]
+      pending_assets: [{
+        asset_id: <Asset Id Hex String>
+        local_balance: <Local Balance Asset Units Numeric String>
+        [name]: <Asset Name String>
+        remote_balance: <Remote Balance Asset Units Numeric String>
+      }]
+      pending_groups: [{
+        group_key: <Asset Group Key Hex String>
+        local_balance: <Local Balance Asset Units Numeric String>
+        remote_balance: <Remote Balance Asset Units Numeric String>
+      }]
+    }
+
+Example:
+
+```js
+import {getAssetChannelBalance} from 'litterm';
+
+const {assets} = await getAssetChannelBalance({litd});
+```
+
+### getAssetChannels
+
+Get the open channels that hold Taproot Assets
+
+Requires `offchain:read` permission
+
+This method uses lnd from `litd.lnd`. lnd must run in litd integrated mode
+with tapd, so that lnd returns the asset data of a channel as JSON.
+
+The channel fields are the same as in lightning getChannels
+
+    {
+      [is_active]: <Limit Results To Only Active Channels Bool> // false
+      [is_offline]: <Limit Results To Only Offline Channels Bool> // false
+      [is_private]: <Limit Results To Only Private Channels Bool> // false
+      [is_public]: <Limit Results To Only Public Channels Bool> // false
+      litd: <Authenticated litd API Object With lnd Object>
+      [partner_public_key]: <Only Channels With Public Key Hex String>
+    }
+
+    @returns via cbk or Promise
+    {
+      channels: [{
+        asset: {
+          capacity: <Channel Capacity Asset Units Numeric String>
+          funding: [{
+            amount: <Funded Asset Units Numeric String>
+            asset_id: <Asset Id Hex String>
+            decimal_display: <Decimal Places To Show Number>
+            genesis_transaction_id: <Genesis Point Transaction Id Hex String>
+            genesis_transaction_vout: <Genesis Point Transaction Vout Number>
+            meta_hash: <Metadata Hash Hex String>
+            name: <Asset Name String>
+            script_key: <Funding Script Key Hex String>
+            version: <Asset Version Number>
+          }]
+          [group_key]: <Asset Group Key Hex String>
+          has_spender_leaves: <Local Commitment Commits To Spender Leaves Bool>
+          incoming_htlc_balance: <Incoming HTLCs Asset Units Numeric String>
+          incoming_htlcs: [{
+            amount: <Asset Units Numeric String>
+            asset_id: <Asset Id Hex String>
+          }]
+          local_assets: [{
+            amount: <Asset Units Numeric String>
+            asset_id: <Asset Id Hex String>
+          }]
+          local_balance: <Local Balance Asset Units Numeric String>
+          outgoing_htlc_balance: <Outgoing HTLCs Asset Units Numeric String>
+          outgoing_htlcs: [{
+            amount: <Asset Units Numeric String>
+            asset_id: <Asset Id Hex String>
+          }]
+          remote_assets: [{
+            amount: <Asset Units Numeric String>
+            asset_id: <Asset Id Hex String>
+          }]
+          remote_balance: <Remote Balance Asset Units Numeric String>
+        }
+        capacity: <Channel Token Capacity Number>
+        id: <Standard Format Channel Id String>
+        is_active: <Channel Active Bool>
+        local_balance: <Local Balance Tokens Number>
+        partner_public_key: <Channel Partner Public Key String>
+        remote_balance: <Remote Balance Tokens Number>
+        transaction_id: <Blockchain Transaction Id String>
+        transaction_vout: <Blockchain Transaction Vout Number>
+        [type]: <Channel Commitment Transaction Type String>
+        ...<lightning Channel Object>
+      }]
+    }
+
+Example:
+
+```js
+import {getAssetChannels} from 'litterm';
+
+const {channels} = await getAssetChannels({litd});
 ```
 
 ### getAutopilotFeatures
@@ -910,8 +1102,9 @@ Methods return errors as arrays: `[code, 'ErrorMessage', {err}]`.
 - `403`: The macaroon does not have the permission for the method.
 - `404`: litd does not have the item.
 - `409`: The item already exists, for example an account label.
-- `501`: litd does not have the feature, for example autopilot is off.
-- `503`: litd returned an error, or litd is not available.
+- `501`: litd does not have the feature or the RPC, for example autopilot is
+  off, or litd is older than the method needs.
+- `503`: litd or lnd returned an error, or litd or lnd is not available.
 
 ## Development
 
