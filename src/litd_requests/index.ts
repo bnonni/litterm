@@ -1,5 +1,7 @@
 export {default as isConnectionFailure} from './is_connection_failure.js';
 export {default as isLitd} from './is_litd.js';
+export {default as isLndInLitd} from './is_lnd_in_litd.js';
+export {default as isMethodUnsupported} from './is_method_unsupported.js';
 export {default as isPermissionDenied} from './is_permission_denied.js';
 export {default as privacyFlagsAsBitmask} from './privacy_flags_as_bitmask.js';
 export {default as ruleValueAsRpcRuleValue} from './rule_value_as_rpc_rule_value.js';
