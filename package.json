@@ -1,6 +1,6 @@
 {
   "name": "litterm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Lightning Terminal daemon (litd) client methods in the style of lightning",
   "keywords": [
     "grpc",
