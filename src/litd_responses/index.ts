@@ -1,4 +1,14 @@
 export {default as accountRpcError} from './account_rpc_error.js';
+export {default as assetBalanceDataAsBalances} from './asset_balance_data_as_balances.js';
+export type {AssetChannelBalance} from './asset_balance_data_as_balances.js';
+export type {AssetChannelBalances} from './asset_balance_data_as_balances.js';
+export type {AssetGroupChannelBalance} from './asset_balance_data_as_balances.js';
+export type {JsonAssetChannelBalances} from './asset_balance_data_as_balances.js';
+export {default as assetChannelDataAsAsset} from './asset_channel_data_as_asset.js';
+export type {AssetTranche} from './asset_channel_data_as_asset.js';
+export type {ChannelAsset} from './asset_channel_data_as_asset.js';
+export type {JsonAssetChannel} from './asset_channel_data_as_asset.js';
+export {default as customChannelDataAsJson} from './custom_channel_data_as_json.js';
 export {default as privacyFlagTypes} from './privacy_flag_types.js';
 export {default as privacyFlagsFromBitmask} from './privacy_flags_from_bitmask.js';
 export {default as rpcAccountAsAccount} from './rpc_account_as_account.js';

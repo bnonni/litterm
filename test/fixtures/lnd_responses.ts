@@ -132,3 +132,85 @@ export const makeMissingPayment = ({hash}: {hash: string}) => {
     status: 'UNKNOWN',
   };
 };
+
+const assetId = '01'.repeat(32);
+const genesisPoint = `${'02'.repeat(32)}:1`;
+const scriptKey = `02${'03'.repeat(32)}`;
+
+/** tapd JSON custom channel data of a channel, the way lnd returns it
+
+  The keys have the order of the tapd JsonAssetChannel struct
+*/
+export const assetChannelJson = [
+  '{"funding_assets":[{"version":1,"asset_genesis":{',
+  `"genesis_point":"${genesisPoint}","name":"coin",`,
+  `"meta_hash":"${'04'.repeat(32)}","asset_id":"${assetId}"},`,
+  `"amount":18446744073709551615,"script_key":"${scriptKey}",`,
+  '"decimal_display":2}],',
+  `"local_assets":[{"asset_id":"${assetId}","amount":18446744073709551000}],`,
+  `"remote_assets":[{"asset_id":"${assetId}","amount":615}],`,
+  '"outgoing_htlcs":[],"incoming_htlcs":[],',
+  '"capacity":18446744073709551615,',
+  `"group_key":"02${'05'.repeat(32)}",`,
+  '"local_balance":18446744073709551000,"remote_balance":615,',
+  '"outgoing_htlc_balance":0,"incoming_htlc_balance":0,',
+  '"spender_leaves":true}',
+].join('');
+
+/** tapd JSON custom channel data of a channel balance, the way lnd returns it
+
+  The keys have the order of the tapd JsonAssetChannelBalances struct
+*/
+export const assetBalanceJson = [
+  '{"open_channels":{',
+  `"${'0b'.repeat(32)}":{"asset_id":"${'0b'.repeat(32)}","name":"b",`,
+  '"local_balance":2,"remote_balance":3},',
+  `"${assetId}":{"asset_id":"${assetId}","name":"coin",`,
+  '"local_balance":18446744073709551000,"remote_balance":615}},',
+  `"open_channels_by_group":{"02${'05'.repeat(32)}":{`,
+  '"local_balance":18446744073709551000,"remote_balance":615}},',
+  `"pending_channels":{"${assetId}":{"asset_id":"${assetId}","name":"coin",`,
+  '"local_balance":100,"remote_balance":0}},',
+  '"pending_channels_by_group":{}}',
+].join('');
+
+const constraints = {
+  chan_reserve_sat: '1000',
+  csv_delay: 144,
+  dust_limit_sat: '354',
+  max_accepted_htlcs: 483,
+  max_pending_amt_msat: '99000000',
+  min_htlc_msat: '1',
+};
+
+/** lnd channel, before the trip through the protos
+
+  {
+    [custom_channel_data]: <Custom Channel Data Buffer Object>
+    [remote_pubkey]: <Peer Public Key Hex String>
+  }
+*/
+export const makeLndChannel = (overrides?: object) => {
+  return {
+    active: true,
+    capacity: '100000',
+    chan_id: '879609302319104001',
+    channel_point: `${'06'.repeat(32)}:0`,
+    commit_fee: '2000',
+    commit_weight: '1100',
+    commitment_type: 'SIMPLE_TAPROOT_OVERLAY',
+    custom_channel_data: Buffer.from(assetChannelJson),
+    fee_per_kw: '2500',
+    local_balance: '50000',
+    local_chan_reserve_sat: '1000',
+    local_constraints: constraints,
+    num_updates: '2',
+    remote_balance: '48000',
+    remote_chan_reserve_sat: '1000',
+    remote_constraints: constraints,
+    remote_pubkey: `03${'07'.repeat(32)}`,
+    total_satoshis_received: '0',
+    total_satoshis_sent: '0',
+    ...overrides,
+  };
+};
