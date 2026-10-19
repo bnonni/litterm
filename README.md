@@ -1116,3 +1116,17 @@ Methods return errors as arrays: `[code, 'ErrorMessage', {err}]`.
 To copy the protos of a different litd release into `protos/`:
 
     pnpm sync-protos v0.17.6
+
+### Live Test
+
+The live test runs each method against a Polar network. It does not run in
+CI, because it needs the [Polar](https://lightningpolar.com) desktop app.
+
+The network must have two started litd nodes, v0.17.1 or later. If the first
+node has no channels to the second node, the test opens a sats channel and an
+asset channel. It also mints the asset and funds the node if necessary.
+
+    NETWORK_ID=1 NODES=alice,bob pnpm test:live
+
+To also check the 501 of `getAccountPayments`, set `OLD_NODE` to a litd node
+that is older than v0.17.1.
