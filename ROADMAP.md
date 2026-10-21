@@ -8,6 +8,7 @@ This file shows the planned work for litterm. The order can change.
 - Release 0.2.0 (2026-10-17): `getAccountPayments`, `getAssetChannels`, and `getAssetChannelBalance`. `lightning` is a peer dependency.
 - CI (2026-10-19): GitHub Actions runs lint, test, and build on each push to `main` and on each pull request.
 - Live test (2026-10-19): `pnpm test:live` runs each method against a Polar network. The script gets the node credentials from polarln (`getNodeCredentials`). It does not run in CI, because it needs the Polar desktop app.
+- Release 0.2.1 (2026-10-21): the method JSDoc matches the code. The docs moved to `docs/`, and `pnpm docs` writes the API pages from the JSDoc.
 
 ## Status
 
