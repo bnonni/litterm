@@ -38,7 +38,8 @@ type Tasks = {
 
 /** Create a super macaroon
 
-  A super macaroon has the permissions of each daemon that litd runs
+  A super macaroon has the permissions of each active daemon that litd runs
+  or connects to
 
   Requires `supermacaroon:write` permission
 

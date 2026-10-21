@@ -50,6 +50,11 @@ type Tasks = {
 
   An `id` or a `label` is required, not both
 
+  An `expires_at`, an `is_expiry_removed`, or a `new_label` is required. Do
+  not use `expires_at` with `is_expiry_removed`.
+
+  A `new_label` must be unique and must not look like an account id
+
   `new_label` needs litd v0.17.0 or later. Older litd versions ignore it.
 
   {

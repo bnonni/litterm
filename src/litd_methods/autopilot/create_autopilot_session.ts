@@ -66,7 +66,10 @@ type Tasks = {
   Requires `autopilot:write` permission
 
   Feature `rules` override the rule values that the Autopilot server
-  recommends. Session `rules` apply to the whole session.
+  recommends. A feature rule value must be between the `min_value` and the
+  `max_value` of the rule in getAutopilotFeatures.
+
+  litd v0.17.6 ignores session `rules`
 
   A rule has a `name` and one rule value, for example:
   `{name: 'rate-limit', rate_limit: {read_limit: {hours, iterations}}}`
@@ -74,6 +77,19 @@ type Tasks = {
   Rule values that are not present are zero
 
   The default privacy flags are the flags of the features
+
+  The `expires_at` date must be in the future
+
+  Each feature `name` must be unique
+
+  A feature `config` must be a JSON object. `{}` sends no configuration.
+
+  Do not use `privacy_flags` with `is_privacy_disabled`
+
+  A `linked_group_id` must be the 4 byte id of the first session in its
+  group. Each session in that group must be revoked or expired.
+
+  The default `mailbox_server` is `mailbox.terminal.lightning.today:443`
 
   {
     expires_at: <Session Expires At ISO 8601 Date String>

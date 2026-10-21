@@ -69,7 +69,11 @@ type Tasks = {
 
   Requires `actions:read` permission
 
-  Use the `next` token with the same filters to get the next page
+  Use the `next` token with the same filters to get the next page. A `limit`
+  and a `token` are not supported together. The default `limit` is 100.
+
+  A `group_id` or a `session_id` is a filter, but not both. Each id is 4 byte
+  hex.
 
   {
     [actor]: <Actor Name String>

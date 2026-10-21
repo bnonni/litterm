@@ -30,6 +30,9 @@ type Tasks = {
 
   litd also stops the session if it is active
 
+  The session must be an Autopilot session. Use revokeSession for other
+  sessions.
+
   Requires `autopilot:write` permission
 
   {

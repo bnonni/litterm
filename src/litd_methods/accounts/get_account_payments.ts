@@ -62,6 +62,9 @@ type Tasks = {
 
   The maximum `limit` is 50. The default `limit` is 20.
 
+  Use the `next` token to get the next page. A `limit` and a `token` are not
+  supported together.
+
   This method needs litd v0.17.1 or later
 
   If lnd does not know an account payment, its hash is in `missing_payments`

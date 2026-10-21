@@ -60,17 +60,23 @@ type Tasks = {
 
   Requires `sessions:write` permission
 
-  An `account` session needs an `account_id`
+  An `account` session needs an `account_id`. Other types must not have an
+  `account_id`.
 
-  A `custom` session needs `permissions`. Use the entity `uri` and a URI, a
-  URI regular expression, or `***readonly***` as the action, to give access to
-  RPC methods.
+  A `custom` session needs `permissions`. Other types must not have
+  `permissions`. Use the entity `uri` and a URI, a URI regular expression, or
+  `***readonly***` as the action, to give access to RPC methods.
 
   litd reads an unknown URI as a regular expression. If the expression matches
   no URI, the session gets no permission for it, and litd returns no error.
+  If the URI is not a valid regular expression, litd returns an error.
   Check `macaroon_permissions` in the result.
 
+  The `expires_at` date must be in the future
+
   The default type is `readonly`
+
+  The default `mailbox_server` is `mailbox.terminal.lightning.today:443`
 
   {
     [account_id]: <Account Id Hex String>
